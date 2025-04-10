@@ -4,6 +4,7 @@ namespace BancoDeSangue.Models
 {
     public class Doador
     {
+        [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
