@@ -1,0 +1,6 @@
+@BancoDeSangue_HostAddress = http://localhost:5084
+
+GET {{BancoDeSangue_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
