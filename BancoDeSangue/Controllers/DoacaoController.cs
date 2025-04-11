@@ -14,25 +14,52 @@ namespace BancoDeSangue.Controllers
 
         public DoacaoController(BancoDeSangueContext context) => _context = context;
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Doacao>>> RecuperaDoacaoAsync() =>
-            await _context.Doacoes.ToListAsync();
-
-        [HttpGet("doador/{doadorId}")]
-        public async Task<ActionResult<IEnumerable<Doacao>>> RecuperaPorCpfAsync(string doadorCpf) =>
-            await _context.Doacoes.Where(doacao => doacao.Doador.Cpf == doadorCpf).ToListAsync();
-
         [HttpPost]
-        public async Task<IActionResult> AtualizaDoacaoAsync(Doacao doacao)
+        public async Task<IActionResult> AtualizaDoacaoAsync(string cpfDoador, int quantidadeML)
         {
-            var doador = await _context.Doadores.FindAsync(doacao.Doador.Cpf);
-            if (doador == null) return NotFound("Doador não encontrado");
+            // Validações iniciais
+            if (string.IsNullOrWhiteSpace(cpfDoador))
+            {
+                return BadRequest("O CPF do doador é obrigatório.");
+            }
 
+            if (quantidadeML <= 0)
+            {
+                return BadRequest("A quantidade de sangue doada deve ser maior que zero.");
+            }
+
+            // Busca o doador pelo CPF
+            var doador = await _context.Doadores
+                .FirstOrDefaultAsync(d => d.CpfDoador == cpfDoador);
+
+            if (doador == null)
+            {
+                return NotFound("Doador não encontrado.");
+            }
+
+            // Verifica se o doador está apto a doar
+            if (doador.UltimaDoacao != null && (DateTime.Now - doador.UltimaDoacao.Value).TotalDays < 90)
+            {
+                return BadRequest("O doador ainda não está apto para realizar uma nova doação.");
+            }
+
+            // Cria a nova doação
+            var doacao = new Doacao
+            {
+                DoadorId = doador.DoadorId,
+                QuantidadeML = quantidadeML,
+                Data = DateTime.Now
+            };
+
+            // Atualiza a última doação do doador
+            doador.UltimaDoacao = DateTime.Now;
+
+            // Salva as alterações no banco de dados
             _context.Doacoes.Add(doacao);
-            doador.UltimaDoacao = doacao.Data;
+            _context.Doadores.Update(doador);
             await _context.SaveChangesAsync();
 
-            return Created("", doacao);
+            return Ok(doacao);
         }
     }
 }

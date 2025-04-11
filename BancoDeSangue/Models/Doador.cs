@@ -16,18 +16,33 @@ namespace BancoDeSangue.Models
 
         [Required]
         [StringLength(11)]
-        public string Cpf { get; set; } // usado nas buscas (identificador lógico)
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "O CPF deve conter exatamente 11 dígitos numéricos.")]
+        public string CpfDoador { get; set; }
 
-        public int Idade { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime DataNascimento { get; set; }
+
+        [NotMapped]
+        public int Idade => DateTime.Now.Year - DataNascimento.Year -
+            (DateTime.Now.DayOfYear < DataNascimento.DayOfYear ? 1 : 0);
+
+
+        [StringLength(15, ErrorMessage = "O telefone deve ter no máximo 15 caracteres.")]
         public string Telefone { get; set; }
+
+        [Required(ErrorMessage = "O tipo sanguíneo é obrigatório.")]
+        [RegularExpression(@"^(A|B|AB|O)[+-]$", ErrorMessage = "Tipo sanguíneo inválido.")]
         public string TipoSanguineo { get; set; }
+
         public DateTime? UltimaDoacao { get; set; }
 
-        public ICollection<Doacao> Doacoes { get; set; }
+        public readonly ICollection<Doacao> Doacoes;
 
         public Doador()
         {
             Doacoes = new Collection<Doacao>();
         }
+
     }
 }
