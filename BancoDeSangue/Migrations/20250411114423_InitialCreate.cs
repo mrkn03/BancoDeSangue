@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -15,10 +16,11 @@ namespace BancoDeSangue.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Doadores",
+                name: "Doador",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DoadorId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Nome = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Cpf = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false)
@@ -32,34 +34,35 @@ namespace BancoDeSangue.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Doadores", x => x.Id);
+                    table.PrimaryKey("PK_Doador", x => x.DoadorId);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Doacoes",
+                name: "Doacao",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    DoadorId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DoacaoId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DoadorId = table.Column<int>(type: "int", nullable: false),
                     Data = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     QuantidadeML = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Doacoes", x => x.Id);
+                    table.PrimaryKey("PK_Doacao", x => x.DoacaoId);
                     table.ForeignKey(
-                        name: "FK_Doacoes_Doadores_DoadorId",
+                        name: "FK_Doacao_Doador_DoadorId",
                         column: x => x.DoadorId,
-                        principalTable: "Doadores",
-                        principalColumn: "Id",
+                        principalTable: "Doador",
+                        principalColumn: "DoadorId",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Doacoes_DoadorId",
-                table: "Doacoes",
+                name: "IX_Doacao_DoadorId",
+                table: "Doacao",
                 column: "DoadorId");
         }
 
@@ -67,10 +70,10 @@ namespace BancoDeSangue.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Doacoes");
+                name: "Doacao");
 
             migrationBuilder.DropTable(
-                name: "Doadores");
+                name: "Doador");
         }
     }
 }

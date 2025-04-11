@@ -1,18 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BancoDeSangue.Models
 {
+    [Table("Doacao")]
     public class Doacao
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public int DoacaoId { get; set; }
 
         [Required]
-        public Guid DoadorId { get; set; }
+        public int DoadorId { get; set; } 
+
+        [ForeignKey("DoadorId")]
+        public Doador Doador { get; set; }
 
         public DateTime Data { get; set; }
+
+        [Required]
         public int QuantidadeML { get; set; }
 
-        public Doador Doador { get; set; }
+        public Doacao()
+        {
+            Data = DateTime.Now;
+        }
     }
 }

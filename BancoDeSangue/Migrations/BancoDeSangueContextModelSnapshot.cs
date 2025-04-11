@@ -21,31 +21,31 @@ namespace BancoDeSangue.Migrations
 
             modelBuilder.Entity("BancoDeSangue.Models.Doacao", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("DoacaoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("DoadorId")
-                        .HasColumnType("char(36)");
+                    b.Property<int>("DoadorId")
+                        .HasColumnType("int");
 
                     b.Property<int>("QuantidadeML")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("DoacaoId");
 
                     b.HasIndex("DoadorId");
 
-                    b.ToTable("Doacoes");
+                    b.ToTable("Doacao");
                 });
 
             modelBuilder.Entity("BancoDeSangue.Models.Doador", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("DoadorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Cpf")
                         .IsRequired()
@@ -70,9 +70,9 @@ namespace BancoDeSangue.Migrations
                     b.Property<DateTime?>("UltimaDoacao")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("Id");
+                    b.HasKey("DoadorId");
 
-                    b.ToTable("Doadores");
+                    b.ToTable("Doador");
                 });
 
             modelBuilder.Entity("BancoDeSangue.Models.Doacao", b =>

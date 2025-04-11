@@ -15,17 +15,17 @@ namespace BancoDeSangue.Controllers
         public DoacaoController(BancoDeSangueContext context) => _context = context;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Doacao>>> Get() =>
+        public async Task<ActionResult<IEnumerable<Doacao>>> RecuperaDoacaoAsync() =>
             await _context.Doacoes.ToListAsync();
 
         [HttpGet("doador/{doadorId}")]
-        public async Task<ActionResult<IEnumerable<Doacao>>> GetByDoador(Guid doadorId) =>
-            await _context.Doacoes.Where(d => d.DoadorId == doadorId).ToListAsync();
+        public async Task<ActionResult<IEnumerable<Doacao>>> RecuperaPorCpfAsync(string doadorCpf) =>
+            await _context.Doacoes.Where(doacao => doacao.Doador.Cpf == doadorCpf).ToListAsync();
 
         [HttpPost]
-        public async Task<IActionResult> Post(Doacao doacao)
+        public async Task<IActionResult> AtualizaDoacaoAsync(Doacao doacao)
         {
-            var doador = await _context.Doadores.FindAsync(doacao.DoadorId);
+            var doador = await _context.Doadores.FindAsync(doacao.Doador.Cpf);
             if (doador == null) return NotFound("Doador não encontrado");
 
             _context.Doacoes.Add(doacao);
