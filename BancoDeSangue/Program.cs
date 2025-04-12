@@ -5,6 +5,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+// Configura CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // Angular local
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // EF Core com MySQL
 builder.Services.AddDbContext<BancoDeSangueContext>(options =>
     options.UseMySql(
@@ -25,6 +36,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Ativa CORS
+app.UseCors("AllowAngularDev");
 
 app.UseHttpsRedirection();
 

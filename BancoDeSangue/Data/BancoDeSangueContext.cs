@@ -10,6 +10,7 @@ namespace BancoDeSangue.Data
 
         public DbSet<Doador> Doadores { get; set; }
         public DbSet<Doacao> Doacoes { get; set; }
-
+        public DbSet<EstoqueDeSangue> Estoques { get; set; }
+        public object EstoqueDeSangue { get; internal set; }
     }
 }

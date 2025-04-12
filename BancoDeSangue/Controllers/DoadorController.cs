@@ -88,7 +88,9 @@ namespace BancoDeSangue.Controllers
             try
             {
                 context.Entry(doador).State = EntityState.Modified;
+
                 await context.SaveChangesAsync();
+                
                 return NoContent();
             }
             catch (Exception ex)
