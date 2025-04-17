@@ -34,6 +34,7 @@ namespace BancoDeSangue.Controllers
         public async Task<ActionResult<Doador>> RecuperaPorCpfAsync(string cpf)
         {
             var doador = await context.Doadores.FirstOrDefaultAsync(d => d.CpfDoador == cpf);
+
             return doador is null ? NotFound() : Ok(doador);
         }
 
@@ -56,7 +57,7 @@ namespace BancoDeSangue.Controllers
 
                 await context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(RecuperaPorCpfAsync), new { cpf = doador.CpfDoador }, doador);
+                return Ok(doador);
             }
             catch (Exception ex)
             {
@@ -75,7 +76,7 @@ namespace BancoDeSangue.Controllers
         {
             if (cpf != doador.CpfDoador)
             {
-                return BadRequest("O CPF informado não corresponde ao doador.");
+                return NotFound("O CPF informado não corresponde ao doador.");
             }
 
             var doadorExistente = await context.Doadores.FirstOrDefaultAsync(d => d.CpfDoador == cpf);
@@ -90,8 +91,8 @@ namespace BancoDeSangue.Controllers
                 context.Entry(doador).State = EntityState.Modified;
 
                 await context.SaveChangesAsync();
-                
-                return NoContent();
+
+                return Ok(doador);
             }
             catch (Exception ex)
             {
@@ -116,8 +117,10 @@ namespace BancoDeSangue.Controllers
             try
             {
                 context.Doadores.Remove(doador);
+               
                 await context.SaveChangesAsync();
-                return NoContent();
+
+                return Ok();
             }
             catch (Exception ex)
             {
