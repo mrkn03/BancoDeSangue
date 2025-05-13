@@ -8,7 +8,7 @@ namespace BancoDeSangue.Data
         public BancoDeSangueContext CreateDbContext(string[] args)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // onde está o appsettings.json
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
 

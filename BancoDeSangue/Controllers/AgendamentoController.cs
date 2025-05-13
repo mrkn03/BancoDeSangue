@@ -17,7 +17,6 @@ namespace BancoDeSangue.Controllers
             _context = context;
         }
 
-        // Cria um agendamento
         [HttpPost]
         public async Task<IActionResult> CriarAgendamento([FromBody] Agendamento agendamento)
         {
@@ -34,15 +33,14 @@ namespace BancoDeSangue.Controllers
             return CreatedAtAction(nameof(ObterAgendamentoPorId), new { id = agendamento.AgendamentoId }, agendamento);
         }
 
-        // Lista todos os agendamentos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Agendamento>>> ListarAgendamentos()
         {
             var agendamentos = await _context.Agendamentos.Include(a => a.Doador).ToListAsync();
+
             return Ok(agendamentos);
         }
 
-        // Pega um agendamento por ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Agendamento>> ObterAgendamentoPorId(int id)
         {
@@ -55,7 +53,6 @@ namespace BancoDeSangue.Controllers
             return Ok(agendamento);
         }
 
-        // Apaga um agendamento
         [HttpDelete("{id}")]
         public async Task<IActionResult> ExcluirAgendamento(int id)
         {
