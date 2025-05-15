@@ -16,23 +16,22 @@ namespace BancoDeSangue.Models
         [ForeignKey("DoadorId")]
         public Doador Doador { get; set; }
 
-
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "A quantidade de sangue doada deve ser maior que zero.")]
         public int QuantidadeML { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
+        [Column(TypeName = "date")]
         [CustomValidation(typeof(Doacao), nameof(ValidarData))]
         public DateTime Data { get; set; }
-        
+
         public Doacao()
         {
             Data = DateTime.Now;
         }
 
-        // Método de validação
-        public static ValidationResult ValidarData(DateTime data, ValidationContext context)
+        // Método de validação  
+        public static ValidationResult? ValidarData(DateTime data, ValidationContext context)
         {
             if (data > DateTime.Now)
             {
@@ -40,6 +39,5 @@ namespace BancoDeSangue.Models
             }
             return ValidationResult.Success;
         }
-
     }
 }

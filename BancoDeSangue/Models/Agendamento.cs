@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BancoDeSangue.Models
 {
@@ -7,6 +8,7 @@ namespace BancoDeSangue.Models
     public class Agendamento
     {
         [Key]
+        [JsonIgnore]
         public int AgendamentoId { get; set; }
 
         //[Required]
@@ -16,16 +18,15 @@ namespace BancoDeSangue.Models
         public required Doador Doador { get; set; }
 
         [Required(ErrorMessage = "A data do agendamento são obrigatórias.")]
-        [DataType(DataType.Date)] 
-        [CustomValidation(typeof(Agendamento), nameof(ValidarData))]
+        [Column(TypeName = "date")]
         public DateTime Data { get; set; }
 
-        //[Required(ErrorMessage = "O local da coleta é obrigatório.")] 
+        [Required(ErrorMessage = "O local da coleta é obrigatório.")]
         [StringLength(100, ErrorMessage = "O local deve ter no máximo 100 caracteres.")]
         public required string LocalColeta { get; set; }
 
         [StringLength(200)]
-        public string Observacoes { get; set; }
+        public string? Observacoes { get; set; }
 
         public static ValidationResult ValidarData(DateTime data, ValidationContext context)
         {

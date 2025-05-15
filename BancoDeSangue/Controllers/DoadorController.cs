@@ -23,7 +23,7 @@ namespace BancoDeSangue.Controllers
         /// <returns>Uma lista de doadores.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Doador>>> RecuperaDoadorAsync() =>
-            await context.Doadores.ToListAsync();
+                await context.Doadores.ToListAsync();
 
         /// <summary>
         /// Recupera um doador pelo CPF.
@@ -33,7 +33,7 @@ namespace BancoDeSangue.Controllers
         [HttpGet("{cpf}")]
         public async Task<ActionResult<Doador>> RecuperaPorCpfAsync(string cpf)
         {
-            var doador = await context.Doadores.FirstOrDefaultAsync(d => d.CpfDoador == cpf);
+            var doador = await context.Doadores.FirstOrDefaultAsync(d => d.Cpf == cpf);
 
             return doador is null ? NotFound() : Ok(doador);
         }
@@ -74,12 +74,12 @@ namespace BancoDeSangue.Controllers
         [HttpPut("{cpf}")]
         public async Task<IActionResult> AtualizaDoadorAsync(string cpf, [FromBody] Doador doador)
         {
-            if (cpf != doador.CpfDoador)
+            if (cpf != doador.Cpf)
             {
                 return NotFound("O CPF informado não corresponde ao doador.");
             }
 
-            var doadorExistente = await context.Doadores.FirstOrDefaultAsync(d => d.CpfDoador == cpf);
+            var doadorExistente = await context.Doadores.FirstOrDefaultAsync(d => d.Cpf == cpf);
 
             if (doadorExistente == null)
             {
@@ -108,7 +108,7 @@ namespace BancoDeSangue.Controllers
         [HttpDelete("{cpf}")]
         public async Task<IActionResult> ExcluiDoadorAsync(string cpf)
         {
-            var doador = await context.Doadores.FirstOrDefaultAsync(d => d.CpfDoador == cpf);
+            var doador = await context.Doadores.FirstOrDefaultAsync(d => d.Cpf == cpf);
             if (doador == null)
             {
                 return NotFound("Doador não encontrado.");

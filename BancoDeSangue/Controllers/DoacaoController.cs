@@ -23,7 +23,7 @@ namespace BancoDeSangue.Controllers
                 return BadRequest("A quantidade de sangue doada deve ser maior que zero.");
 
             var doador = await _context.Doadores
-                .FirstOrDefaultAsync(d => d.CpfDoador == cpfDoador);
+                .FirstOrDefaultAsync(d => d.Cpf == cpfDoador);
 
             if (doador == null)
                 return NotFound("Doador não encontrado.");
@@ -33,7 +33,7 @@ namespace BancoDeSangue.Controllers
 
             var doacao = new Doacao
             {
-                DoadorId = doador.DoadorId,
+                DoadorId = doador.Id,
                 QuantidadeML = quantidadeML,
                 Data = DateTime.Now
             };

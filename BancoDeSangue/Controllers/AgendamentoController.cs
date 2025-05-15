@@ -3,6 +3,7 @@ using BancoDeSangue.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using BancoDeSangue.Repository.Interfaces;
 
 namespace BancoDeSangue.Controllers
 {
@@ -10,42 +11,34 @@ namespace BancoDeSangue.Controllers
     [ApiController]
     public class AgendamentoController : ControllerBase
     {
-        private readonly BancoDeSangueContext _context;
+        private readonly IAgendamentoRepository agendamentoRepository;
 
-        public AgendamentoController(BancoDeSangueContext context)
+        public AgendamentoController(IAgendamentoRepository agendamentoRepository)
         {
-            _context = context;
+        
+            this.agendamentoRepository = agendamentoRepository;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarAgendamento([FromBody] Agendamento agendamento)
+        public ActionResult<Agendamento> CriarAgendamento([FromBody] Agendamento agendamento)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+           agendamentoRepository.CriarAgendamento(agendamento);
 
-            var doador = await _context.Doadores.FindAsync(agendamento.DoadorId);
-            if (doador == null)
-                return NotFound("Doador não encontrado.");
-
-            _context.Agendamentos.Add(agendamento);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(ObterAgendamentoPorId), new { id = agendamento.AgendamentoId }, agendamento);
+            return CreatedAtAction(nameof(ObterAgendamento), new { id = agendamento.AgendamentoId }, agendamento);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Agendamento>>> ListarAgendamentos()
+        public ActionResult<IEnumerable<Agendamento>> ListarAgendamentos()
         {
-            var agendamentos = await _context.Agendamentos.Include(a => a.Doador).ToListAsync();
+            var agendamentos = agendamentoRepository.ListarAgendamentos();
 
             return Ok(agendamentos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Agendamento>> ObterAgendamentoPorId(int id)
+        public ActionResult<Agendamento> ObterAgendamento(int id)
         {
-            var agendamento = await _context.Agendamentos.Include(a => a.Doador)
-                .FirstOrDefaultAsync(a => a.AgendamentoId == id);
+            var agendamento = agendamentoRepository.ObterAgendamento(id);
 
             if (agendamento == null)
                 return NotFound();
@@ -54,16 +47,16 @@ namespace BancoDeSangue.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> ExcluirAgendamento(int id)
+        public IActionResult ExcluirAgendamento(int id)
         {
-            var agendamento = await _context.Agendamentos.FindAsync(id);
+            var agendamento = agendamentoRepository.ObterAgendamento(id);
+
             if (agendamento == null)
                 return NotFound();
 
-            _context.Agendamentos.Remove(agendamento);
-            await _context.SaveChangesAsync();
+            var agendamentoDeletado = agendamentoRepository.DeletarAgendamento(id);
 
-            return NoContent();
+            return Ok(agendamentoDeletado);
         }
       
     }

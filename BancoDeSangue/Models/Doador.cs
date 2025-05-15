@@ -1,6 +1,7 @@
 ﻿    using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace BancoDeSangue.Models
@@ -9,7 +10,7 @@ namespace BancoDeSangue.Models
     public class Doador
     {
         [Key]
-        public int DoadorId { get; set; } // PK para o banco
+        public int Id { get; set; }
 
         [Required]
         public string Nome { get; set; }
@@ -17,10 +18,10 @@ namespace BancoDeSangue.Models
         [Required]
         [StringLength(11)]
         [RegularExpression(@"^\d{11}$", ErrorMessage = "O CPF deve conter exatamente 11 dígitos numéricos.")]
-        public string CpfDoador { get; set; }
+        public string Cpf { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
+        [Column(TypeName = "date")]
         public DateTime DataNascimento { get; set; }
 
         [NotMapped]
@@ -35,8 +36,11 @@ namespace BancoDeSangue.Models
         [RegularExpression(@"^(A|B|AB|O)[+-]$", ErrorMessage = "Tipo sanguíneo inválido.")]
         public string TipoSanguineo { get; set; }
 
+        [JsonIgnore]
+        [Column(TypeName = "date")]
         public DateTime? UltimaDoacao { get; set; }
 
+        [JsonIgnore]
         public readonly ICollection<Doacao> Doacoes;
 
         public Doador()
