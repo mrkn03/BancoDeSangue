@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BancoDeSangue.Migrations
 {
     [DbContext(typeof(BancoDeSangueContext))]
-    [Migration("20250514014036_AtualizaDatas")]
-    partial class AtualizaDatas
+    [Migration("20250517020345_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
