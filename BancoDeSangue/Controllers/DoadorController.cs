@@ -1,5 +1,6 @@
 ﻿using BancoDeSangue.Data;
 using BancoDeSangue.Models;
+using BancoDeSangue.Repository.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,29 +14,36 @@ namespace BancoDeSangue.Controllers
     [ApiController]
     public class DoadorController : ControllerBase
     {
-        private readonly BancoDeSangueContext context;
+        private readonly IDoadorRepository doadorRepository;
 
-        public DoadorController(BancoDeSangueContext context) => this.context = context;
+        public DoadorController(IDoadorRepository doadorRepository)
+        {
+            this.doadorRepository = doadorRepository;
+        }
 
         /// <summary>
         /// Recupera todos os doadores cadastrados.
         /// </summary>
         /// <returns>Uma lista de doadores.</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Doador>>> RecuperaDoadorAsync() =>
-                await context.Doadores.ToListAsync();
+        public ActionResult<IEnumerable<Doador>> ListarDoadores()
+        {
+            var doadores = doadorRepository.ListarDoadores();
+
+            return Ok(doadores);
+        }
 
         /// <summary>
         /// Recupera um doador pelo CPF.
         /// </summary>
         /// <param name="cpf">CPF do doador a ser recuperado.</param>
         /// <returns>O doador correspondente ao CPF informado.</returns>
-        [HttpGet("{cpf}")]
-        public async Task<ActionResult<Doador>> RecuperaPorCpfAsync(string cpf)
+        [HttpGet("{cpf:string}")]
+        public ActionResult<Doador> RecuperarDoador(string cpf)
         {
-            var doador = await context.Doadores.FirstOrDefaultAsync(d => d.Cpf == cpf);
+            var doador = doadorRepository.RecuperarDoador(cpf);
 
-            return doador is null ? NotFound() : Ok(doador);
+            return (doador);
         }
 
         /// <summary>
@@ -44,25 +52,11 @@ namespace BancoDeSangue.Controllers
         /// <param name="doador">Objeto doador a ser adicionado.</param>
         /// <returns>O doador criado com a rota para acessá-lo.</returns>
         [HttpPost]
-        public async Task<IActionResult> AdicionaDoador([FromBody] Doador doador)
+        public ActionResult AdicionaDoador(Doador doador)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+            doadorRepository.CadastrarDoador(doador);
 
-                context.Doadores.Add(doador);
-
-                await context.SaveChangesAsync();
-
-                return Ok(doador);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao adicionar doador: {ex.Message}");
-            }
+            return CreatedAtAction(nameof(RecuperarDoador), new { id = doador.Id}, doador);
         }
 
         /// <summary>
@@ -71,33 +65,17 @@ namespace BancoDeSangue.Controllers
         /// <param name="cpf">CPF do doador a ser atualizado.</param>
         /// <param name="doador">Objeto doador com as informações atualizadas.</param>
         /// <returns>Um status HTTP indicando o resultado da operação.</returns>
-        [HttpPut("{cpf}")]
-        public async Task<IActionResult> AtualizaDoadorAsync(string cpf, [FromBody] Doador doador)
+        [HttpPut("{cpf:string}")]
+        public ActionResult AtualizaDoador(string cpf, Doador doador)
         {
-            if (cpf != doador.Cpf)
+            if(cpf != doador.Cpf)
             {
-                return NotFound("O CPF informado não corresponde ao doador.");
+                return BadRequest("Dados Invalidos");
             }
 
-            var doadorExistente = await context.Doadores.FirstOrDefaultAsync(d => d.Cpf == cpf);
+            doadorRepository.AtualizarDoador(doador);
 
-            if (doadorExistente == null)
-            {
-                return NotFound("Doador não encontrado.");
-            }
-
-            try
-            {
-                context.Entry(doador).State = EntityState.Modified;
-
-                await context.SaveChangesAsync();
-
-                return Ok(doador);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao atualizar doador: {ex.Message}");
-            }
+            return Ok(doador);
         }
 
         /// <summary>
@@ -105,27 +83,19 @@ namespace BancoDeSangue.Controllers
         /// </summary>
         /// <param name="cpf">CPF do doador a ser excluído.</param>
         /// <returns>Um status HTTP indicando o resultado da operação.</returns>
-        [HttpDelete("{cpf}")]
-        public async Task<IActionResult> ExcluiDoadorAsync(string cpf)
+        [HttpDelete("{cpf:string}")]
+        public  ActionResult ExcluiDoador(string cpf)
         {
-            var doador = await context.Doadores.FirstOrDefaultAsync(d => d.Cpf == cpf);
-            if (doador == null)
+            var doador = doadorRepository.RecuperarDoador(cpf);
+
+            if(doador is null)
             {
-                return NotFound("Doador não encontrado.");
+                return NotFound("Doador nao encontrado");
             }
 
-            try
-            {
-                context.Doadores.Remove(doador);
-               
-                await context.SaveChangesAsync();
+            var doadorDeletado = doadorRepository.DeletarDoador(cpf);
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao excluir doador: {ex.Message}");
-            }
+            return Ok(doadorDeletado);
         }
     }
 }
