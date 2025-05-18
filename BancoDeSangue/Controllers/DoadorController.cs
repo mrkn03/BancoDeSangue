@@ -38,7 +38,7 @@ namespace BancoDeSangue.Controllers
         /// </summary>
         /// <param name="cpf">CPF do doador a ser recuperado.</param>
         /// <returns>O doador correspondente ao CPF informado.</returns>
-        [HttpGet("{cpf:string}")]
+        [HttpGet("{cpf}")]
         public ActionResult<Doador> RecuperarDoador(string cpf)
         {
             var doador = doadorRepository.RecuperarDoador(cpf);
@@ -65,7 +65,7 @@ namespace BancoDeSangue.Controllers
         /// <param name="cpf">CPF do doador a ser atualizado.</param>
         /// <param name="doador">Objeto doador com as informações atualizadas.</param>
         /// <returns>Um status HTTP indicando o resultado da operação.</returns>
-        [HttpPut("{cpf:string}")]
+        [HttpPut("{cpf}")]
         public ActionResult AtualizaDoador(string cpf, Doador doador)
         {
             if(cpf != doador.Cpf)
@@ -83,7 +83,7 @@ namespace BancoDeSangue.Controllers
         /// </summary>
         /// <param name="cpf">CPF do doador a ser excluído.</param>
         /// <returns>Um status HTTP indicando o resultado da operação.</returns>
-        [HttpDelete("{cpf:string}")]
+        [HttpDelete("{cpf}")]
         public  ActionResult ExcluiDoador(string cpf)
         {
             var doador = doadorRepository.RecuperarDoador(cpf);
