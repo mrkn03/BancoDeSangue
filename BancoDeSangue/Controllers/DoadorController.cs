@@ -56,7 +56,7 @@ namespace BancoDeSangue.Controllers
         {
             doadorRepository.CadastrarDoador(doador);
 
-            return CreatedAtAction(nameof(RecuperarDoador), new { id = doador.Id}, doador);
+            return Ok(doador);
         }
 
         /// <summary>

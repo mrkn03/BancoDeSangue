@@ -41,7 +41,7 @@ namespace BancoDeSangue.Models
         public DateTime? UltimaDoacao { get; set; }
 
         [JsonIgnore]
-        public readonly ICollection<Doacao> Doacoes;
+        public ICollection<Doacao> Doacoes { get; private set; } = new Collection<Doacao>();
 
         public Doador()
         {
