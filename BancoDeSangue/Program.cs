@@ -1,4 +1,6 @@
 using BancoDeSangue.Data;
+using BancoDeSangue.Repositories;
+using BancoDeSangue.Repositories.Interfaces;
 using BancoDeSangue.Repository;
 using BancoDeSangue.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +37,8 @@ builder.Services.AddScoped<IDoadorRepository, DoadorRepository>();
 builder.Services.AddScoped<IDoacaoRepository, DoacaoRepository>();
 builder.Services.AddScoped<IEstoqueDeSangueRepository, EstoqueDeSangueRepository>();
 builder.Services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

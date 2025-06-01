@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using BancoDeSangue.Repository.Interfaces;
+using BancoDeSangue.Repositories.Interfaces;
 
 namespace BancoDeSangue.Controllers
 {
@@ -11,18 +12,23 @@ namespace BancoDeSangue.Controllers
     [ApiController]
     public class AgendamentoController : ControllerBase
     {
-        private readonly IAgendamentoRepository agendamentoRepository;
+        private readonly IUnitOfWork unitOfWork;
 
-        public AgendamentoController(IAgendamentoRepository agendamentoRepository)
+        public AgendamentoController(IUnitOfWork unitOfWork)
         {
-        
-            this.agendamentoRepository = agendamentoRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         [HttpPost]
         public ActionResult<Agendamento> CriarAgendamento([FromBody] Agendamento agendamento)
         {
-           agendamentoRepository.CriarAgendamento(agendamento);
+           
+             if(agendamento == null)
+                return BadRequest("Agendamento não pode ser nulo.");
+
+            unitOfWork.AgendamentoRepository.Criar(agendamento);
+            
+            unitOfWork.Commit();
 
             return CreatedAtAction(nameof(ObterAgendamento), new { id = agendamento.AgendamentoId }, agendamento);
         }
@@ -30,7 +36,7 @@ namespace BancoDeSangue.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Agendamento>> ListarAgendamentos()
         {
-            var agendamentos = agendamentoRepository.ListarAgendamentos();
+            var agendamentos = unitOfWork.AgendamentoRepository.Listar();
 
             return Ok(agendamentos);
         }
@@ -38,7 +44,7 @@ namespace BancoDeSangue.Controllers
         [HttpGet("{id}")]
         public ActionResult<Agendamento> ObterAgendamento(int id)
         {
-            var agendamento = agendamentoRepository.ObterAgendamento(id);
+            var agendamento = unitOfWork.AgendamentoRepository.ObterPorId(a => a.AgendamentoId == id);
 
             if (agendamento == null)
                 return NotFound();
@@ -49,12 +55,13 @@ namespace BancoDeSangue.Controllers
         [HttpDelete("{id}")]
         public IActionResult ExcluirAgendamento(int id)
         {
-            var agendamento = agendamentoRepository.ObterAgendamento(id);
+            var agendamento = unitOfWork.AgendamentoRepository.ObterPorId(a => a.AgendamentoId == id);
 
             if (agendamento == null)
-                return NotFound();
+                return NotFound("Agendamento não encontrado");
 
-            var agendamentoDeletado = agendamentoRepository.DeletarAgendamento(id);
+            var agendamentoDeletado = unitOfWork.AgendamentoRepository.Excluir(agendamento);
+            unitOfWork.Commit();
 
             return Ok(agendamentoDeletado);
         }

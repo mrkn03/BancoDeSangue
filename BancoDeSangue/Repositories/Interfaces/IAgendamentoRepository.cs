@@ -2,12 +2,7 @@
 
 namespace BancoDeSangue.Repository.Interfaces
 {
-    public interface IAgendamentoRepository
+    public interface IAgendamentoRepository : IRepository<Agendamento>
     {
-        Agendamento CriarAgendamento(Agendamento agendamento);
-        Agendamento AtualizarAgendamento(Agendamento agendamento);
-        Agendamento ObterAgendamento(int id);
-        Agendamento DeletarAgendamento(int id);
-        IEnumerable<Agendamento> ListarAgendamentos();
     }
 }
