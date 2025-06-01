@@ -1,5 +1,6 @@
 ﻿using BancoDeSangue.Data;
 using BancoDeSangue.Models;
+using BancoDeSangue.Repositories.Interfaces;
 using BancoDeSangue.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace BancoDeSangue.Controllers
                 return BadRequest("A quantidade de sangue doada deve ser maior que zero.");
             }
 
+            
 
             doacaoRepository.CriarDoacao(cpfDoador, quantidadeML);
 

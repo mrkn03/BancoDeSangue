@@ -1,5 +1,6 @@
 ﻿using BancoDeSangue.Data;
 using BancoDeSangue.Models;
+using BancoDeSangue.Repositories.Interfaces;
 using BancoDeSangue.Repository.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,12 @@ namespace BancoDeSangue.Controllers
     [ApiController]
     public class DoadorController : ControllerBase
     {
-        private readonly IDoadorRepository doadorRepository;
+        
+        private readonly IUnitOfWork unitOfWork;
 
-        public DoadorController(IDoadorRepository doadorRepository)
+        public DoadorController(IUnitOfWork unitOfWork)
         {
-            this.doadorRepository = doadorRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace BancoDeSangue.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Doador>> ListarDoadores()
         {
-            var doadores = doadorRepository.ListarDoadores();
+            var doadores = unitOfWork.DoadorRepository.Listar();
 
             return Ok(doadores);
         }
@@ -41,7 +43,13 @@ namespace BancoDeSangue.Controllers
         [HttpGet("{cpf}")]
         public ActionResult<Doador> RecuperarDoador(string cpf)
         {
-            var doador = doadorRepository.RecuperarDoador(cpf);
+            var doador = unitOfWork.DoadorRepository.ObterPorId(d => d.Cpf == cpf);
+
+            if (doador is null)
+            {
+                return NotFound("Doador não encontrado.");
+            }
+
 
             return (doador);
         }
@@ -54,7 +62,8 @@ namespace BancoDeSangue.Controllers
         [HttpPost]
         public ActionResult AdicionaDoador(Doador doador)
         {
-            doadorRepository.CadastrarDoador(doador);
+            unitOfWork.DoadorRepository.Criar(doador);
+            unitOfWork.Commit();
 
             return Ok(doador);
         }
@@ -73,7 +82,8 @@ namespace BancoDeSangue.Controllers
                 return BadRequest("Dados Invalidos");
             }
 
-            doadorRepository.AtualizarDoador(doador);
+            unitOfWork.DoadorRepository.Atualizar(doador);
+            unitOfWork.Commit();
 
             return Ok(doador);
         }
@@ -86,14 +96,15 @@ namespace BancoDeSangue.Controllers
         [HttpDelete("{cpf}")]
         public  ActionResult ExcluiDoador(string cpf)
         {
-            var doador = doadorRepository.RecuperarDoador(cpf);
+            var doador = unitOfWork.DoadorRepository.ObterPorId(d => d.Cpf == cpf);
 
-            if(doador is null)
+            if (doador is null)
             {
                 return NotFound("Doador nao encontrado");
             }
 
-            var doadorDeletado = doadorRepository.DeletarDoador(cpf);
+            var doadorDeletado = unitOfWork.DoadorRepository.Excluir(doador);
+            unitOfWork.Commit();
 
             return Ok(doadorDeletado);
         }

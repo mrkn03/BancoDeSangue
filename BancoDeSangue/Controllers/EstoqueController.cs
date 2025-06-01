@@ -1,5 +1,6 @@
 ﻿using BancoDeSangue.Data;
 using BancoDeSangue.Models;
+using BancoDeSangue.Repositories.Interfaces;
 using BancoDeSangue.Repository.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,23 +11,24 @@ namespace BancoDeSangue.Controllers
     [ApiController]
     public class EstoqueController : ControllerBase
     {
-        private readonly IEstoqueDeSangueRepository estoqueRepository;
+        private readonly IUnitOfWork unitOfWork;
 
-        public EstoqueController(IEstoqueDeSangueRepository estoqueRepository)
+        public EstoqueController(IUnitOfWork unitOfWork)
         {
-            this.estoqueRepository = estoqueRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public ActionResult<EstoqueDeSangue> GetEstoque()
         {
 
-            var estoque = estoqueRepository.RecuperaEstoque();
+            var estoque = unitOfWork.EstoqueDeSangueRepository.ObterPorId(e => e.Id == 1);
 
             if (estoque == null)
             {
                 return NotFound();
             }
+
             return Ok(estoque);
         }
     }

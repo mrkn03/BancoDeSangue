@@ -1,23 +1,11 @@
 ﻿using BancoDeSangue.Data;
 using BancoDeSangue.Models;
+using BancoDeSangue.Repositories;
 using BancoDeSangue.Repository.Interfaces;
 
 namespace BancoDeSangue.Repository
 {
-    public class EstoqueDeSangueRepository : IEstoqueDeSangueRepository
+    public class EstoqueDeSangueRepository(BancoDeSangueContext context) : Repository<EstoqueDeSangue>(context), IEstoqueDeSangueRepository
     {
-        private readonly BancoDeSangueContext context;
-
-        public EstoqueDeSangueRepository(BancoDeSangueContext context)
-        {
-            this.context = context;
-        }
-
-        public EstoqueDeSangue RecuperaEstoque()
-        {
-            var estoque = context.Estoques.FirstOrDefault();
-
-            return estoque;
-        }
     }
 }

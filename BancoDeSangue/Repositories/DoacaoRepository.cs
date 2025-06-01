@@ -1,20 +1,14 @@
 ﻿using BancoDeSangue.Data;
 using BancoDeSangue.DTOs;
 using BancoDeSangue.Models;
+using BancoDeSangue.Repositories;
 using BancoDeSangue.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BancoDeSangue.Repository
 {
-    public class DoacaoRepository : IDoacaoRepository
+    public class DoacaoRepository(BancoDeSangueContext context) : Repository<Doacao>(context), IDoacaoRepository
     {
-        private readonly BancoDeSangueContext context;
-
-        public DoacaoRepository(BancoDeSangueContext context)
-        {
-            this.context = context;
-        }
-
         public Doacao CriarDoacao(string cpf, int quantidadeML)
         {
 

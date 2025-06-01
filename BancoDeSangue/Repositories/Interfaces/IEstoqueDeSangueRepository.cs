@@ -2,8 +2,7 @@
 
 namespace BancoDeSangue.Repository.Interfaces
 {
-    public interface IEstoqueDeSangueRepository
+    public interface IEstoqueDeSangueRepository : IRepository<EstoqueDeSangue>
     {
-        EstoqueDeSangue RecuperaEstoque();
     }
 }

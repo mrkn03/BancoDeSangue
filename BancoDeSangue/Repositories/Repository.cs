@@ -5,15 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BancoDeSangue.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T>(BancoDeSangueContext context) : IRepository<T> where T : class
     {
 
-        private readonly BancoDeSangueContext context;
-
-        public Repository(BancoDeSangueContext context)
-        {
-            this.context = context;
-        }
+        private readonly BancoDeSangueContext context = context;
 
         public T Criar(T entidade)
         {
