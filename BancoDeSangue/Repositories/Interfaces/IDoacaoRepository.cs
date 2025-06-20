@@ -7,7 +7,7 @@ namespace BancoDeSangue.Repository.Interfaces
 {
     public interface IDoacaoRepository : IRepository<Doacao>
     {
-        Doacao CriarDoacao(string cpf, int quantidadeML);
-        IEnumerable<DoacaoDTO> ListarDoacoes();
+        Task<Doacao> CriarDoacaoAsync(string cpf, int quantidadeML);
+        Task<IEnumerable<DoacaoDTO>> ListarDoacoesAsync();
     }
 }

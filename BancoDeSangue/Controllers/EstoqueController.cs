@@ -19,10 +19,10 @@ namespace BancoDeSangue.Controllers
         }
 
         [HttpGet]
-        public ActionResult<EstoqueDeSangue> GetEstoque()
+        public async Task<ActionResult<EstoqueDeSangue>> ObterEstoque()
         {
 
-            var estoque = unitOfWork.EstoqueDeSangueRepository.ObterPorId(e => e.Id == 1);
+            var estoque = await unitOfWork.EstoqueDeSangueRepository.RecuperarPorIdAsync(e => e.Id == 1);
 
             if (estoque == null)
             {

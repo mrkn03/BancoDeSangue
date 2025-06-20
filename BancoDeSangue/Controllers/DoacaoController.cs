@@ -19,7 +19,7 @@ namespace BancoDeSangue.Controllers
         }
 
         [HttpPost]
-        public ActionResult RealizarDoacaoAsync(string cpfDoador, int quantidadeML)
+        public async Task<ActionResult> RealizarDoacao(string cpfDoador, int quantidadeML)
         {
             if (string.IsNullOrEmpty(cpfDoador))
             {
@@ -31,9 +31,7 @@ namespace BancoDeSangue.Controllers
                 return BadRequest("A quantidade de sangue doada deve ser maior que zero.");
             }
 
-            
-
-            doacaoRepository.CriarDoacao(cpfDoador, quantidadeML);
+            await doacaoRepository.CriarDoacaoAsync(cpfDoador, quantidadeML);
 
             return Ok("Doação realizada com sucesso.");
         }
@@ -41,10 +39,10 @@ namespace BancoDeSangue.Controllers
 
 
         [HttpGet("recupera-doacoes")]
-        public ActionResult RecuperaDoacoes()
+        public async Task<ActionResult> RecuperaDoacoes()
         {
 
-            var doacoes = doacaoRepository.ListarDoacoes();
+            var doacoes = await doacaoRepository.ListarDoacoesAsync();
 
             return Ok(doacoes);
         }

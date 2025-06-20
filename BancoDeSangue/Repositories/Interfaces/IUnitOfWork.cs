@@ -9,7 +9,7 @@ namespace BancoDeSangue.Repositories.Interfaces
         IDoadorRepository DoadorRepository { get; }
         IEstoqueDeSangueRepository EstoqueDeSangueRepository { get; }
 
-        void Commit();
+        Task CommitAsync();
         void Dispose();
     }
 }

@@ -20,31 +20,31 @@ namespace BancoDeSangue.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Agendamento> CriarAgendamento([FromBody] Agendamento agendamento)
+        public async  Task<ActionResult<Agendamento>> CriarAgendamento([FromBody] Agendamento agendamento)
         {
            
              if(agendamento == null)
                 return BadRequest("Agendamento não pode ser nulo.");
 
-            unitOfWork.AgendamentoRepository.Criar(agendamento);
+            await unitOfWork.AgendamentoRepository.CriarAsync(agendamento);
             
-            unitOfWork.Commit();
+            await unitOfWork.CommitAsync();
 
             return CreatedAtAction(nameof(ObterAgendamento), new { id = agendamento.AgendamentoId }, agendamento);
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Agendamento>> ListarAgendamentos()
+        public async Task<ActionResult<IEnumerable<Agendamento>>> ListarAgendamentos()
         {
-            var agendamentos = unitOfWork.AgendamentoRepository.Listar();
+            var agendamentos = await unitOfWork.AgendamentoRepository.ListarAgendamentoAsync();
 
             return Ok(agendamentos);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Agendamento> ObterAgendamento(int id)
+        public async Task<ActionResult<Agendamento>> ObterAgendamento([FromRoute] int id)
         {
-            var agendamento = unitOfWork.AgendamentoRepository.ObterPorId(a => a.AgendamentoId == id);
+            var agendamento = await unitOfWork.AgendamentoRepository.RecuperarPorIdAsync(a => a.AgendamentoId == id);
 
             if (agendamento == null)
                 return NotFound();
@@ -53,15 +53,15 @@ namespace BancoDeSangue.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult ExcluirAgendamento(int id)
+        public async Task<ActionResult> ExcluirAgendamento([FromRoute]int id)
         {
-            var agendamento = unitOfWork.AgendamentoRepository.ObterPorId(a => a.AgendamentoId == id);
+            var agendamento = await unitOfWork.AgendamentoRepository.RecuperarPorIdAsync(a => a.AgendamentoId == id);
 
             if (agendamento == null)
                 return NotFound("Agendamento não encontrado");
 
-            var agendamentoDeletado = unitOfWork.AgendamentoRepository.Excluir(agendamento);
-            unitOfWork.Commit();
+            var agendamentoDeletado = await unitOfWork.AgendamentoRepository.ExcluirAsync(agendamento);
+            await unitOfWork.CommitAsync();
 
             return Ok(agendamentoDeletado);
         }

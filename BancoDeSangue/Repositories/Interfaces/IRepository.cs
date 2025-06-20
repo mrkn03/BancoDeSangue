@@ -5,10 +5,11 @@ namespace BancoDeSangue.Repository.Interfaces
 {
     public interface IRepository<T>
     {
-        T Criar(T entidade);
-        T Atualizar(T entidade);
-        T Excluir(T entidade);
-        T? ObterPorId(Expression<Func<T, bool>> expressao);
-        IEnumerable<T> Listar();
+        Task<T> CriarAsync(T entidade);
+        Task<T> AtualizarAsync(T entidade);
+        Task<T> ExcluirAsync(T entidade);
+        Task<T?> RecuperarAsync();
+        Task<T?> RecuperarPorIdAsync(Expression<Func<T, bool>> expressao);
+        Task<IEnumerable<T>> ListarAsync();
     }
 }

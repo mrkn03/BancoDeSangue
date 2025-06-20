@@ -56,9 +56,9 @@ namespace BancoDeSangue.Repositories
             this.context = context;
         }
 
-        public void Commit()
+        public async Task CommitAsync()
         {
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
         public void Dispose()

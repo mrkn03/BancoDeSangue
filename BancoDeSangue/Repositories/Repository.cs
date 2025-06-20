@@ -10,35 +10,42 @@ namespace BancoDeSangue.Repositories
 
         private readonly BancoDeSangueContext context = context;
 
-        public T Criar(T entidade)
+        public async Task<T> CriarAsync(T entidade)
         {
-            context.Set<T>().Add(entidade);
+            await context.Set<T>().AddAsync(entidade);
             
             return entidade;
         }
 
-        public T Atualizar(T entidade)
+        public Task<T> AtualizarAsync(T entidade)
         {
             context.Set<T>().Update(entidade);
             
-            return entidade;
+            return Task.FromResult(entidade);
         }
 
-        public T Excluir(T entidade)
+        public Task<T> ExcluirAsync(T entidade)
         {
             context.Set<T>().Remove(entidade);
 
-            return entidade;
+            return Task.FromResult(entidade);
         }
 
-        public IEnumerable<T> Listar()
+        public async Task<IEnumerable<T>> ListarAsync()
         {
-            return context.Set<T>().AsNoTracking().ToList();
+            return await context.Set<T>()
+                          .AsNoTracking()
+                          .ToListAsync();
         }
 
-        public T? ObterPorId(Expression<Func<T, bool>> expressao)
+        public async Task<T?> RecuperarAsync()
         {
-            return context.Set<T>().FirstOrDefault(expressao);
+            return await context.Set<T>().FirstOrDefaultAsync();
+        }
+
+        public async Task<T?> RecuperarPorIdAsync(Expression<Func<T, bool>> expressao)
+        {
+            return await context.Set<T>().FirstOrDefaultAsync(expressao);
         }
     }
 }

@@ -2,18 +2,31 @@
 using BancoDeSangue.DTOs;
 using BancoDeSangue.Models;
 using BancoDeSangue.Repositories;
+using BancoDeSangue.Repositories.Interfaces;
 using BancoDeSangue.Repository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace BancoDeSangue.Repository
 {
-    public class DoacaoRepository(BancoDeSangueContext context) : Repository<Doacao>(context), IDoacaoRepository
+    public class DoacaoRepository : Repository<Doacao>, IDoacaoRepository
     {
-        public Doacao CriarDoacao(string cpf, int quantidadeML)
-        {
+        private readonly IUnitOfWork unitOfWork;
+        private readonly BancoDeSangueContext context;
 
-            var doador = context.Doadores
-                .FirstOrDefault(d => d.Cpf == cpf) ?? throw new ArgumentException("Doador não encontrado.");
+        public DoacaoRepository(BancoDeSangueContext context) : base(context)
+        {
+        }
+
+        public DoacaoRepository(IUnitOfWork unitOfWork, BancoDeSangueContext context) : base(context)
+        {
+            this.unitOfWork = unitOfWork;
+            this.context = context;
+        }
+
+        public async Task<Doacao> CriarDoacaoAsync(string cpf, int quantidadeML)
+        {
+            var doador = await unitOfWork.DoadorRepository
+                .RecuperarPorIdAsync(d => d.Cpf == cpf)
+                ?? throw new ArgumentException("Doador não encontrado.");
 
             if (doador.UltimaDoacao != null && (DateTime.Now - doador.UltimaDoacao.Value).TotalDays < 90)
             {
@@ -29,15 +42,11 @@ namespace BancoDeSangue.Repository
 
             doador.UltimaDoacao = DateTime.Now;
 
-            context.Doacoes.Add(doacao);
-            context.SaveChanges();
+            await unitOfWork.DoacaoRepository.CriarAsync(doacao);
 
-            var estoque = context.Estoques.FirstOrDefault();
+            await unitOfWork.CommitAsync();
 
-            if (estoque == null)
-            {
-                throw new InvalidOperationException("Estoque de sangue não encontrado.");
-            }
+            var estoque = await unitOfWork.EstoqueDeSangueRepository.RecuperarAsync() ?? throw new NullReferenceException("Estoque não encontrado");
 
             switch (doador.TipoSanguineo.ToUpper())
             {
@@ -69,12 +78,11 @@ namespace BancoDeSangue.Repository
                     throw new InvalidOperationException("Tipo sanguíneo inválido.");
             }
 
-            context.SaveChanges();
+            await unitOfWork.CommitAsync();
             return doacao;
-
         }
 
-        public IEnumerable<DoacaoDTO> ListarDoacoes()
+        public async Task<IEnumerable<DoacaoDTO>> ListarDoacoesAsync()
         {
             var dataAtual = DateTime.Now;
             var dataInicio = dataAtual.AddMonths(-12);
@@ -90,7 +98,9 @@ namespace BancoDeSangue.Repository
                 })
                 .ToList();
 
-            var doacoesPorPeriodo = context.Doacoes
+            var doacoes = await unitOfWork.DoacaoRepository.ListarAsync();
+
+            var doacoesPorPeriodo = doacoes
                 .Where(d => d.Data >= dataInicio && d.Data <= dataAtual)
                 .GroupBy(d => new { d.Data.Year, d.Data.Month })
                 .Select(group => new
@@ -112,7 +122,6 @@ namespace BancoDeSangue.Repository
                         TotalDoacoes = doacoes.Sum(d => d.TotalDoacoes)
                     }
                 )
-
                 .OrderBy(result => DateTime.ParseExact(result.MesAno, "MM yyyy", null))
                 .ToList();
 
