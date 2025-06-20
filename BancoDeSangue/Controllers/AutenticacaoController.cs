@@ -11,6 +11,11 @@ namespace BancoDeSangue.Controllers
     {
         private readonly AutenticacaoService autenticacaoService;
 
+        public AutenticacaoController(AutenticacaoService autenticacaoService)
+        {
+            this.autenticacaoService = autenticacaoService;
+        }
+
         [HttpPost("registrar")]
         public async Task<ActionResult> Registrar([FromBody] RegistrarDTO registrarDTO)
         {
