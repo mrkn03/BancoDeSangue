@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BancoDeSangue.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class DoacaoController : ControllerBase
     {
         private readonly IDoacaoRepository doacaoRepository;

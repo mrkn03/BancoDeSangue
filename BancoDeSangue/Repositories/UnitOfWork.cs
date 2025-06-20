@@ -11,6 +11,7 @@ namespace BancoDeSangue.Repositories
         private IDoacaoRepository? doacaoRepository;
         private IAgendamentoRepository? agendamentoRepository;
         private IEstoqueDeSangueRepository? estoqueDeSangueRepository;
+        private IUsuarioRepository? usuarioRepository;
 
         public BancoDeSangueContext context;
 
@@ -48,6 +49,14 @@ namespace BancoDeSangue.Repositories
             {
                 return estoqueDeSangueRepository ??= new EstoqueDeSangueRepository(context);
 
+            }
+        }
+
+        public IUsuarioRepository UsuarioRepository
+        {
+            get
+            {
+                return usuarioRepository ??= new UsuarioRepository(context, this);
             }
         }
 

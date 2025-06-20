@@ -15,5 +15,6 @@ namespace BancoDeSangue.Data
         public DbSet<Doacao> Doacoes { get; set; }
         public DbSet<EstoqueDeSangue> Estoques { get; set; }
         public DbSet<Agendamento> Agendamentos { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }

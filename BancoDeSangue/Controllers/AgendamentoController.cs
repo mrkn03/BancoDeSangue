@@ -8,8 +8,8 @@ using BancoDeSangue.Repositories.Interfaces;
 
 namespace BancoDeSangue.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AgendamentoController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
