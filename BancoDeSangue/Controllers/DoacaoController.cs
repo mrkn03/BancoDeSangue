@@ -1,4 +1,5 @@
 ﻿using BancoDeSangue.Data;
+using BancoDeSangue.DTOs.NovaPasta;
 using BancoDeSangue.Models;
 using BancoDeSangue.Repositories.Interfaces;
 using BancoDeSangue.Repository.Interfaces;
@@ -18,28 +19,31 @@ namespace BancoDeSangue.Controllers
             this.doacaoRepository = doacaoRepository;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> RealizarDoacao(string cpfDoador, int quantidadeML)
+        [HttpPost("realizar-doacao")]
+        public async Task<ActionResult> RealizarDoacao(DoacaoRequest request)
         {
-            if (string.IsNullOrEmpty(cpfDoador))
+            if (string.IsNullOrEmpty(request.Cpf))
             {
                 return BadRequest("CPF do doador não pode ser nulo ou vazio.");
             }
 
-            if (quantidadeML <= 0)
+            if (request.quantidadeML <= 0)
             {
                 return BadRequest("A quantidade de sangue doada deve ser maior que zero.");
             }
 
-            await doacaoRepository.CriarDoacaoAsync(cpfDoador, quantidadeML);
+            var doacao = await doacaoRepository.CriarDoacaoAsync(request.Cpf, request.quantidadeML);
 
-            return Ok("Doação realizada com sucesso.");
+            if (doacao == null)
+            {
+                return BadRequest("Erro ao criar a doação.");
+            }
+
+            return CreatedAtAction(nameof(RealizarDoacao), new { id = doacao.DoacaoId }, doacao);
         }
 
-
-
-        [HttpGet("recupera-doacoes")]
-        public async Task<ActionResult> RecuperaDoacoes()
+        [HttpGet("listar-doacoes")]
+        public async Task<ActionResult> ListarDoacoes()
         {
 
             var doacoes = await doacaoRepository.ListarDoacoesAsync();
@@ -47,5 +51,12 @@ namespace BancoDeSangue.Controllers
             return Ok(doacoes);
         }
 
+        [HttpGet("recupera-doacoes")]
+        public async Task<ActionResult> RecuperaDoacoes()
+        {
+            var doacoes = await doacaoRepository.RecuperaDoacoesAsync();
+
+            return Ok(doacoes);
+        }
     }
 }

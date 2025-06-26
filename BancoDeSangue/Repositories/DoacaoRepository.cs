@@ -127,5 +127,19 @@ namespace BancoDeSangue.Repository
 
             return resultadoFinal;
         }
+
+        public async Task<IEnumerable<DoacaoDTO>> RecuperaDoacoesAsync()
+        {
+            var doacoes = await unitOfWork.DoacaoRepository.ListarAsync();
+
+            var doacoesDTO = doacoes.Select(d => new DoacaoDTO
+            {
+                DoadorId = d.DoadorId,
+                QuantidadeML = d.QuantidadeML,
+
+            });
+
+            return doacoesDTO;
+        }
     }
 }
